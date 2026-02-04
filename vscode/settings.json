@@ -1,0 +1,55 @@
+{
+    "workbench.startupEditor": "none",
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "explorer.confirmDragAndDrop": false,
+    "explorer.confirmDelete": false,
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "terminal.integrated.enableMultiLinePasteWarning": "never",
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": true,
+        "markdown": false,
+        "scminput": false,
+        "cpp": true,
+        "python": false
+    },
+    "makefile.configureOnOpen": true,
+    "explorer.confirmPasteNative": false,
+    "extensions.autoUpdate": false,
+    "update.mode": "manual",
+    "security.workspace.trust.untrustedFiles": "open",
+    "workbench.colorTheme": "Rosé Pine Dawn",
+    "terminal.integrated.profiles.osx": {
+        "bash": {
+            "path": "bash",
+            "args": [
+                "-l"
+            ],
+            "icon": "terminal-bash"
+        },
+        "zsh": {
+            "path": "zsh",
+            "args": [
+                "-l"
+            ]
+        },
+        "fish": {
+            "path": "fish",
+            "args": [
+                "-l"
+            ]
+        },
+        "tmux": {
+            "path": "tmux",
+            "icon": "terminal-tmux"
+        },
+        "pwsh": {
+            "path": "pwsh",
+            "icon": "terminal-powershell"
+        },
+        "nu": {
+            "path": "/opt/homebrew/bin/nu"
+        }
+    },
+    "terminal.integrated.defaultProfile.osx": "nu"
+}
