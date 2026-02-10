@@ -5,6 +5,10 @@ $env.config = {
 }
 
 
+def tree [dir: path = ., --level (-L): int = 2] {
+  ^eza --tree -L $level $dir
+}
+
 # open some file with specified path
 def obs [file: path] {
   let p = ($file | path expand)
@@ -12,8 +16,6 @@ def obs [file: path] {
 }
 
 $env.OBSIDIAN_VAULT = "~/obsidian/biehenjia"
-
-
 
 # open THE vault
 def vbs [rel: string@vbs-complete] {
@@ -31,7 +33,4 @@ def vbs-complete [] {
   | sort
 }
 
-def tree [dir: path = ., --level (-L): int = 2] {
-  ^eza --tree -L $level $dir
-}
 
