@@ -1,0 +1,75 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+[
+  {
+    "context": "Workspace",
+    "bindings": {
+      // "shift shift": "file_finder::Toggle"
+    },
+  },
+  {
+    "context": "Editor && vim_mode == insert",
+    "bindings": {
+      // "j k": "vim::NormalBefore"
+    },
+  },
+  {
+    "context": "(Editor && mode == full)",
+    "bindings": {
+      "cmd->": null
+    }
+  },
+  {
+    "context": "(Editor && mode == full)",
+    "bindings": {
+      "cmd->": null
+    }
+  },
+  {
+    "context": "AcpThread > (Editor && use_modifier_to_send)",
+    "bindings": {
+      "cmd-enter": null
+    }
+  },
+  {
+    "context": "(Editor && editor_agent_diff)",
+    "bindings": {
+      "alt-cmd-y": null
+    }
+  },
+  {
+    "context": "AcpThread > (Editor && !use_modifier_to_send)",
+    "bindings": {
+      "enter": null
+    }
+  },
+  {
+    "context": "AgentDiff",
+    "bindings": {
+      "alt-cmd-y": null
+    }
+  },
+  {
+    "context": "(Editor && editor_agent_diff)",
+    "bindings": {
+      "alt-cmd-z": null
+    }
+  },
+  {
+    "context": "AgentDiff",
+    "bindings": {
+      "alt-cmd-z": null
+    }
+  },
+  {
+    "context": "KeymapEditor",
+    "bindings": {
+      "cmd-e": null
+    }
+  }
+]

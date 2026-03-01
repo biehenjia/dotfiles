@@ -7,22 +7,20 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "base_keymap": "VSCode",
+  "enable_language_server": true,
   "terminal": {
-    "dock": "right"
+    "dock": "right",
   },
   "buffer_font_family": "JetBrainsMono Nerd Font",
   "session": {
-    "trust_all_worktrees": true
+    "trust_all_worktrees": true,
   },
   "telemetry": {
     "diagnostics": false,
-    "metrics": false
+    "metrics": false,
   },
   "ui_font_size": 16,
   "buffer_font_size": 15,
-  "theme": {
-    "mode": "light",
-    "light": "Rosé Pine Dawn",
-    "dark": "Gruvbox Dark Soft",
-  },
+  "theme": "Catppuccin Macchiato (Blur) [Light]",
 }

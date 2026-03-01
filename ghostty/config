@@ -1,7 +1,7 @@
-theme=Rose Pine Dawn
-background-opacity=0.9  
+theme=Everforest Dark Hard
+background-opacity=0.45
 background-blur=true
-background-blur-radius=9/
+background-blur-radius=50
 
 
 maximize = true
@@ -10,4 +10,4 @@ font-size = 20
 
 keybind = global:cmd+backquote=toggle_quick_terminal
 quick-terminal-position = top
-quick-terminal-animation-duration = 0 
+quick-terminal-animation-duration = 0

@@ -1,35 +1,37 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
-# Rose Pine Dawn "pink gradient" prompt
-# light -> deep pinks:
-# #faf4ed  (base)
-# #f2e9e1  (overlay)
-# #f4dfe6  (custom soft pink)
-# #ebbcba  (rose-pine-dawn: rose)
-# #d7827e  (rose-pine-dawn: rose)
-# #b4637a  (rose-pine-dawn: love)
+# Pastel "earthy tree" palette (soft bark + sage + moss)
+# light -> deeper earthy accents:
+# #fbf7f0  (base cream)
+# #f1e9dc  (overlay sand)
+# #e7e1d5  (mushroom)
+# #cfe1d6  (pale sage)
+# #a9c6b2  (sage)
+# #6e9c7a  (moss)
+# #3f6b4f  (pine)
+# #3a3f35  (deep bark text)
 
 format = """
-[░▒▓](#ebbcba)\
-[  ](bg:#f4dfe6 fg:#575279)\
-[](bg:#ebbcba fg:#f4dfe6)\
+[░▒▓](#a9c6b2)\
+[  ](bg:#e7e1d5 fg:#3a3f35)\
+[](bg:#a9c6b2 fg:#e7e1d5)\
 $directory\
-[](fg:#ebbcba bg:#d7827e)\
+[](fg:#a9c6b2 bg:#6e9c7a)\
 $git_branch\
 $git_status\
-[](fg:#d7827e bg:#b4637a)\
+[](fg:#6e9c7a bg:#3f6b4f)\
 $nodejs\
 $rust\
 $golang\
 $php\
-[](fg:#b4637a bg:#f2e9e1)\
+[](fg:#3f6b4f bg:#f1e9dc)\
 $time\
-[ ](fg:#f2e9e1)\
+[ ](fg:#f1e9dc)\
 \n$character"""
 
 
 [directory]
-style = "fg:#575279 bg:#ebbcba"
+style = "fg:#3a3f35 bg:#a9c6b2"
 format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
@@ -42,35 +44,35 @@ truncation_symbol = "…/"
 
 [git_branch]
 symbol = ""
-style = "bg:#d7827e"
-format = '[[ $symbol $branch ](fg:#faf4ed bg:#d7827e)]($style)'
+style = "bg:#6e9c7a"
+format = '[[ $symbol $branch ](fg:#fbf7f0 bg:#6e9c7a)]($style)'
 
 [git_status]
-style = "bg:#d7827e"
-format = '[[($all_status$ahead_behind )](fg:#faf4ed bg:#d7827e)]($style)'
+style = "bg:#6e9c7a"
+format = '[[($all_status$ahead_behind )](fg:#fbf7f0 bg:#6e9c7a)]($style)'
 
 [nodejs]
 symbol = ""
-style = "bg:#b4637a"
-format = '[[ $symbol ($version) ](fg:#faf4ed bg:#b4637a)]($style)'
+style = "bg:#3f6b4f"
+format = '[[ $symbol ($version) ](fg:#fbf7f0 bg:#3f6b4f)]($style)'
 
 [rust]
 symbol = ""
-style = "bg:#b4637a"
-format = '[[ $symbol ($version) ](fg:#faf4ed bg:#b4637a)]($style)'
+style = "bg:#3f6b4f"
+format = '[[ $symbol ($version) ](fg:#fbf7f0 bg:#3f6b4f)]($style)'
 
 [golang]
 symbol = ""
-style = "bg:#b4637a"
-format = '[[ $symbol ($version) ](fg:#faf4ed bg:#b4637a)]($style)'
+style = "bg:#3f6b4f"
+format = '[[ $symbol ($version) ](fg:#fbf7f0 bg:#3f6b4f)]($style)'
 
 [php]
 symbol = ""
-style = "bg:#b4637a"
-format = '[[ $symbol ($version) ](fg:#faf4ed bg:#b4637a)]($style)'
+style = "bg:#3f6b4f"
+format = '[[ $symbol ($version) ](fg:#fbf7f0 bg:#3f6b4f)]($style)'
 
 [time]
 disabled = false
 time_format = "%R" # Hour:Minute Format
-style = "bg:#f2e9e1"
-format = '[[  $time ](fg:#797593 bg:#f2e9e1)]($style)'
+style = "bg:#f1e9dc"
+format = '[[  $time ](fg:#3f6b4f bg:#f1e9dc)]($style)'

@@ -16,9 +16,8 @@
     "makefile.configureOnOpen": true,
     "explorer.confirmPasteNative": false,
     "extensions.autoUpdate": false,
-    "update.mode": "manual",
+    "update.mode": "none",
     "security.workspace.trust.untrustedFiles": "open",
-    "workbench.colorTheme": "Rosé Pine Dawn",
     "terminal.integrated.profiles.osx": {
         "bash": {
             "path": "bash",
@@ -51,5 +50,28 @@
             "path": "/opt/homebrew/bin/nu"
         }
     },
-    "terminal.integrated.defaultProfile.osx": "nu"
+    "terminal.integrated.defaultProfile.osx": "nu",
+    "workbench.colorCustomizations": {
+        "terminal.background": "#00000000"
+    },
+    "window.titleBarStyle": "custom",
+    "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
+    "workbench.activityBar.location": "hidden",
+    "vscode_vibrancy.opacity": -0.9,
+    "vscode_vibrancy.refreshInterval": 1000,
+    "vscode_vibrancy.preventFlash": false,
+    "animations.Install-Method": "Apc Customize UI++",
+    "apc.imports": [
+        "file://${userHome}/.vscode/extensions/brandonkirbyson.vscode-animations-2.0.7/dist/updateHandler.js"
+    ],
+    "workbench.colorTheme": "Default Dark+",
+    "window.commandCenter": false,
+    "workbench.layoutControl.enabled": false,
+    "editor.aiStats.enabled": false,
+    "git.openRepositoryInParentFolders": "never",
+    "terminal.integrated.gpuAcceleration": "off",
+    "window.systemColorTheme": "dark",
+    "window.autoDetectColorScheme": false,
+    "chat.viewSessions.orientation": "stacked",
+    "chat.viewSessions.enabled": false
 }

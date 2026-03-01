@@ -10,6 +10,7 @@ let extra = [
   "/bin"
   "~/.local/bin"
   "~/.cargo/bin"
+  "/Applications/Obsidian.app/Contents/MacOS"
 ]
 
 let current = (
