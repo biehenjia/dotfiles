@@ -69,9 +69,9 @@
     "workbench.layoutControl.enabled": false,
     "editor.aiStats.enabled": false,
     "git.openRepositoryInParentFolders": "never",
+    "chat.viewSessions.orientation": "stacked",
+    "chat.viewSessions.enabled": false,
     "terminal.integrated.gpuAcceleration": "off",
     "window.systemColorTheme": "dark",
-    "window.autoDetectColorScheme": false,
-    "chat.viewSessions.orientation": "stacked",
-    "chat.viewSessions.enabled": false
+    "window.autoDetectColorScheme": false
 }

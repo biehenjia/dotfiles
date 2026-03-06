@@ -1,61 +1,69 @@
 
+use ~/dotfiles/nushell/obs.nu
 
 $env.config = {
     show_banner: false
 }
 
 
-def tree [dir: path = ., --level (-L): int = 2] {
-  ^eza --tree -L $level $dir
+
+# obs.nu (rg --json based)
+
+export-env {
+  if ($env.OBS_TASK_ROOT? | is-empty) {
+    $env.OBS_TASK_ROOT = $env.PWD
+  }
 }
 
-# open some file with specified path
-def obs [file: path] {
-  let p = ($file | path expand)
-  ^open $"obsidian://open?path=($p)"
+def obs-clean-task-text [s: string] {
+  $s
+  | str replace "- [ ] " ""
+  | str replace "- [x] " ""
+  | str replace "- [X] " ""
+  | str replace -r '\s*\[[^\]]+::[^\]]+\]' ''
+  | str replace -r '\s+' ' '
+  | str trim
 }
 
-$env.OBSIDIAN_VAULT = "~/obsidian/biehenjia"
+def obs-rg-tasks [] {
+  ^rg --json --color never --glob "*.md" '^\s*-\s*\[[ xX]\]\s+' $env.OBSIDIAN_MDS
+  | lines
+  | each {|l| ($l | from json) }
+  | where type == "match"
+  | each {|m|
+      let file = $m.data.path.text
+      let line = ($m.data.line_number | into int)
+      let raw = ($m.data.lines.text | str trim --right)
 
-# open THE vault
-def vbs [rel: string@vbs-complete] {
-  let vault = ($env.OBSIDIAN_VAULT | path expand)
-  let full = ($vault | path join $rel)
-  ^open $"obsidian://open?path=($full)"
-}
 
-def vbs-complete [] {
-  let vault = ($env.OBSIDIAN_VAULT | path expand)
+      let status = ($raw | str substring 3..4)
 
-  # recursively match markdown files inside the vault
-  glob $"($vault)/**/*.md"
-  | each {|p| $p | path relative-to $vault }
-  | sort
-}
-
-def "nu-complete-obsidian-task-paths" [] {
-  let rows = (obsidian tasks format=csv | from csv)
-
-  $rows
-  | each {|r|
-      let v = ($r | values)
-
-      # need at least: col0, col1(task name), ..., colN-2(path), colN-1(line)
-      if (($v | length) < 3) { return null }
-
-      let task_name = ($v | get 1 | into string)
-      let task_path = ($v | get (($v | length) - 2) | into string)
-
-      if (($task_path | str length) == 0) { return null }
-
-      { value: $task_path, description: $task_name }
+      {
+        value: $"($file):($line)"
+        description: (obs-clean-task-text $raw)
+        status: $status
+        file: $file
+        line: $line
+      }
     }
-  | compact
-  | uniq-by value
 }
 
-def "obs task" [
-  task_path: string@nu-complete-obsidian-task-paths
+def obs-open-tasks-table [] {
+  obs-rg-tasks
+  | where {|t| ($t.status != "x") and ($t.status != "X") }
+  | sort-by value
+}
+
+def "nu-complete obs task open" [] {
+  obs-open-tasks-table | select value description
+}
+
+export def "obs task open" [
+  loc?: string@"nu-complete obs task open"
 ] {
-  $task_path
+  if $loc == null {
+    obs-open-tasks-table | select value description status
+  } else {
+    obs-open-tasks-table | where value == $loc | first
+  }
 }
