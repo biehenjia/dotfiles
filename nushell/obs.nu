@@ -1,4 +1,6 @@
-# obs.nu
+# a nushell module 
+
+
 
 export-env {
   $env.OBSIDIAN_VAULT = "~/obsidian/biehenjia"
