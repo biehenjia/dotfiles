@@ -71,6 +71,7 @@
     "git.openRepositoryInParentFolders": "never",
     "chat.viewSessions.orientation": "stacked",
     "chat.viewSessions.enabled": false,
+    "editor.minimap.showSlider": "always",
     "terminal.integrated.gpuAcceleration": "off",
     "window.systemColorTheme": "dark",
     "window.autoDetectColorScheme": false

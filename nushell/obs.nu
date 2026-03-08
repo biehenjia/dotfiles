@@ -1,182 +1,122 @@
-# a nushell module 
-
-
+# nushell utilities for obsidian.
 
 export-env {
   $env.OBSIDIAN_VAULT = "~/obsidian/biehenjia"
   $env.OBSIDIAN_MDS = $"($env.OBSIDIAN_VAULT)/**/*.md"
 }
 
-def obs-vault-root [] {
-  $env.OBSIDIAN_VAULT | path expand
-}
+def obs-vault-root [] { $env.OBSIDIAN_VAULT | path expand }
+def obs-files []     { glob $env.OBSIDIAN_MDS }
 
-def obs-files [] {
-  glob $env.OBSIDIAN_MDS
-}
+# --- field parsing ---
 
 def extract-inline-fields [text: string] {
-  $text
-  | parse -r '\[(?<key>[a-zA-Z0-9_-]+)::(?<val>[^\]]+)\]'
-  | reduce -f {} { |it, acc|
-      let raw = ($it.val | str trim)
-      let value = (
-        if ($raw =~ '^[0-9]+$') {
-          $raw | into int
-        } else {
-          $raw
-        }
-      )
-      $acc | upsert $it.key $value
-    }
+  let pairs = (
+    $text
+    | parse -r '\[(?<key>[a-zA-Z0-9_-]+)::(?<val>[^\]]+)\]'
+    | update val { str trim }
+    | update val { |r| if ($r.val =~ '^[0-9]+$') { $r.val | into int } else { $r.val } }
+  )
+  if ($pairs | is-empty) { {} } else { $pairs | transpose -r -d }
 }
 
 def strip-inline-fields [text: string] {
-  $text
-  | str replace -r '\s*\[[a-zA-Z0-9_-]+::[^\]]+\]' ''
-  | str trim
+  $text | str replace -ra '\s*\[[a-zA-Z0-9_-]+::[^\]]+\]' '' | str trim
 }
 
 def strip-task-marker [text: string] {
-  $text
-  | str replace -r '^\s*(?:[-*]|\d+\.)\s+\[(?: |x|X)\]\s*' ''
+  $text | str replace -r '^\s*(?:[-*]|\d+\.)\s+\[(?: |x|X)\]\s*' ''
 }
 
-def parse-rg-lines [status: string, vault: string] {
-  to text
-  | lines
-  | where ($it | str trim | is-not-empty)
-  | parse "{path}:{line}:{task}"
-  | update path { |row|
-      $row.path
-      | path expand
-      | path relative-to $vault
-    }
-  | update line { into int }
-  | insert status $status
-  | update task { |row| strip-task-marker $row.task }
-  | insert fields { |row| extract-inline-fields $row.task }
-  | each { |row| $row | merge $row.fields }
-  | reject fields
-  | update task { |row| strip-inline-fields $row.task }
-}
-
-def sort-task-table [tbl: table, sort_by?: string] {
-  if ($sort_by | is-empty) {
-    $tbl | sort-by path line
-  } else {
-    $tbl
-    | each { |row|
-        let val = (
-          if ($row | columns | any {|c| $c == $sort_by }) {
-            $row | get $sort_by
-          } else {
-            null
-          }
-        )
-
-        $row
-        | upsert __sort_missing ($val == null)
-        | upsert __sort_value $val
-      }
-    | sort-by __sort_missing __sort_value path line
-    | reject __sort_missing __sort_value
-  }
-}
+# --- completions ---
 
 def "nu-complete obs-task-fields" [] {
   let files = (obs-files)
-  let field_re = '\[(?<key>[a-zA-Z0-9_-]+)::(?<val>[^\]]+)\]'
-
-  if ($files | is-empty) {
-    []
-  } else {
-    ^rg --no-heading --only-matching $field_re ...$files
-    | lines
-    | parse -r $field_re
-    | get key
-    | uniq
-    | sort
-  }
+  if ($files | is-empty) { return [] }
+  ^rg --no-heading --only-matching '\[[a-zA-Z0-9_-]+::[^\]]+\]' ...$files
+  | lines
+  | parse -r '\[(?<key>[a-zA-Z0-9_-]+)::'
+  | get key | uniq | sort
 }
+
+# --- public API ---
 
 export def tasks [
   sort_by?: string@"nu-complete obs-task-fields"
-  --closed
-  --only_closed
 ] {
-  if ($closed and $only_closed) {
-    error make { msg: "Use at most one of --closed or --only_closed" }
-  }
-
   let files = (obs-files)
+  if ($files | is-empty) { return [] }
+
   let vault = (obs-vault-root)
 
-  if ($files | is-empty) {
-    []
-  } else {
-    let prefix = '^\s*(?:[-*]|\d+\.)\s+'
-    let open_re = $'($prefix)\[\s\]'
-    let closed_re = $'($prefix)\[[xX]\]'
-
-    let tbl = (
-      if $only_closed {
-        ^rg --line-number --no-heading $closed_re ...$files | parse-rg-lines "closed" $vault
-      } else if $closed {
-        let open_tbl = (^rg --line-number --no-heading $open_re ...$files | parse-rg-lines "open" $vault)
-        let closed_tbl = (^rg --line-number --no-heading $closed_re ...$files | parse-rg-lines "closed" $vault)
-        $open_tbl | append $closed_tbl
-      } else {
-        ^rg --line-number --no-heading $open_re ...$files | parse-rg-lines "open" $vault
+  let rows = (
+    ^rg --line-number --no-heading '^\s*(?:[-*]|\d+\.)\s+\[[x X]\]' ...$files
+    | lines
+    | where { |ln| $ln | str trim | is-not-empty }
+    | parse -r '^(?P<path>.*?):(?P<line>\d+):(?P<task>.+)$'
+    | update path { |r| $r.path | path expand | path relative-to $vault }
+    | update line { into int }
+    | insert status { |row| if ($row.task =~ '\[x\]|\[X\]') { 1 } else { 0 } }
+    | update task { strip-task-marker $in }
+    | insert fields { |row| extract-inline-fields $row.task }
+    | update task   { |row| strip-inline-fields $row.task }
+    | insert title  { |row|
+        let m = ($row.task | parse -r '^(?P<title>\w+):\s+(?P<rest>.+)$')
+        if ($m | is-empty) { null } else { $m | first | get title }
       }
-    )
-
-    sort-task-table $tbl $sort_by | place-column-after-line $sort_by
-  }
-}
-
-export def task-completions [] {
-  tasks
-  | each { |row|
-      {
-        value: $"($row.path):($row.line)"
-        description: $row.task
+    | update task   { |row|
+        let m = ($row.task | parse -r '^\w+:\s+(?P<rest>.+)$')
+        if ($m | is-empty) { $row.task } else { $m | first | get rest }
       }
-    }
-}
-
-export def task [sel: string@task-completions] {
-  let row = (
-    tasks
-    | where { |r| $"($r.path):($r.line)" == $sel }
-    | first
   )
 
-  $row.task
+  if ($rows | is-empty) { return [] }
+
+  let field_keys = ($rows | get fields | each { columns } | flatten | uniq)
+
+  let tbl = if ($field_keys | is-empty) {
+    $rows | reject fields | select path line status title task
+  } else {
+    let pre  = ($field_keys | reduce -f $rows { |key, acc| $acc | default null $key })
+    let flat = ($pre | each { |row| $row | reject fields | merge ($row.fields) })
+    $flat | select path line status title task ...$field_keys
+  }
+
+  if ($sort_by | is-empty) {
+    $tbl | sort-by path line
+  } else {
+    let has        = ($tbl | where { ($in | get $sort_by) != null })
+    let missing    = ($tbl | where { ($in | get $sort_by) == null })
+    let other_cols = ($tbl | columns | where { $in != $sort_by })
+    ($has | sort-by { |r| $r | get $sort_by } | append $missing) | select $sort_by ...$other_cols
+  }
 }
 
-def place-column-after-line [col?] {
-  let tbl = $in
+def "nu-complete task-cols" [] {
+  tasks | columns | each { |c| {value: $c} }
+}
 
-  if ($col | is-empty) {
-    $tbl
+
+def "nu-complete task-completions" [context: string] {
+  let parts = ($context | str trim | split row ' ')
+  let col   = if ($parts | length) > 2 { $parts | get 1 } else { null }
+  let tbl   = if $col != null and ($col in (tasks | columns)) {
+    tasks
+    | where { |r| ($r | get $col) != null }
+    | sort-by { |r| $r | get $col }
   } else {
-    $tbl | each { |row|
-      let cols = ($row | columns)
-
-      if not ($cols | any {|c| $c == $col }) {
-        $row
-      } else {
-        let rest_cols = (
-          $cols | where {|c|
-            $c != "path" and $c != "line" and $c != $col
-          }
-        )
-
-        ($row | select path line)
-        | merge ($row | select $col)
-        | merge ($row | select ...$rest_cols)
-      }
-    }
+    tasks | sort-by path line
   }
+  $tbl | each { |r| {
+    value: $"($r.path):($r.line)",
+    description: $r.task
+  }}
+}
+
+export def task [
+  col?: string@"nu-complete task-cols"
+  sel?: string@"nu-complete task-completions"
+] {
+  if ($sel | is-empty) { return null }
+  tasks | where { |r| $"($r.path):($r.line)" == $sel } | first
 }
