@@ -114,9 +114,21 @@ def "nu-complete task-completions" [context: string] {
 }
 
 export def task [
-  col?: string@"nu-complete task-cols"
+  col?: string@"nu-complete task-cols"  
   sel?: string@"nu-complete task-completions"
 ] {
   if ($sel | is-empty) { return null }
   tasks | where { |r| $"($r.path):($r.line)" == $sel } | first
+}
+
+export def todo [
+  col?: string@"nu-complete task-cols"
+  --count: int = 3
+] {
+  let tbl = if $col != null {
+    tasks $col | where { |r| ($r | get $col) != null }
+  } else {
+    tasks
+  }
+  $tbl | where status == 0 | first $count | drop 
 }
