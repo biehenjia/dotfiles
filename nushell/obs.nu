@@ -8,7 +8,6 @@ export-env {
 def obs-vault-root [] { $env.OBSIDIAN_VAULT | path expand }
 def obs-files []     { glob $env.OBSIDIAN_MDS }
 
-# --- field parsing ---
 
 def extract-inline-fields [text: string] {
   let pairs = (
@@ -28,7 +27,6 @@ def strip-task-marker [text: string] {
   $text | str replace -r '^\s*(?:[-*]|\d+\.)\s+\[(?: |x|X)\]\s*' ''
 }
 
-# --- completions ---
 
 def "nu-complete obs-task-fields" [] {
   let files = (obs-files)
@@ -39,7 +37,6 @@ def "nu-complete obs-task-fields" [] {
   | get key | uniq | sort
 }
 
-# --- public API ---
 
 export def tasks [
   sort_by?: string@"nu-complete obs-task-fields"
