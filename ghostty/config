@@ -9,6 +9,14 @@ background-blur-radius=50
 maximize = true
 font-size = 20
 
+# Breathing room around the terminal grid. micro has no editor-padding option
+# of its own, so this is how the editing pane gets margins — it applies to the
+# whole surface (nushell prompt included), not just micro. balance spreads the
+# leftover sub-cell space evenly instead of piling it on the right/bottom.
+window-padding-x = 16
+window-padding-y = 12
+window-padding-balance = true
+
 
 keybind = global:cmd+backquote=toggle_quick_terminal
 quick-terminal-position = top

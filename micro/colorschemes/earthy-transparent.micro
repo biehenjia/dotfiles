@@ -35,7 +35,9 @@ color-link line-number          "#5c6357,default"
 color-link current-line-number  "#a9c6b2,default"
 color-link gutter-error         "#d9534f"
 color-link gutter-warning       "#c98f5a"
-color-link cursor-line          ",default"
+# no cursor-line fill — the current line is marked by current-line-number only
+# (settings.json also sets "cursorline": false). A "fg,bg" with an empty fg
+# renders as reverse video in tcell, which is what "too much highlight" was.
 color-link color-column         "#2f342b"
 color-link selection            "#f1e9dc,#3f6b4f"
 color-link match-brace          "bold #6e9c7a"
