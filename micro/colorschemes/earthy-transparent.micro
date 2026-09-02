@@ -1,0 +1,44 @@
+# earthy-transparent — no background of its own; the terminal shows through
+# (ghostty here is Everforest Dark Hard at 0.45 opacity). Warm sage / moss /
+# terracotta syntax pulled from the starship palette. Tuned for a dark bg.
+#
+# Every rule leaves the background as "default" except the few UI elements that
+# genuinely need a fill (status line, selection, matched brace).
+
+color-link default              "#f1e9dc,default"
+
+color-link comment              "#7f8c78"
+color-link identifier           "#cfe1d6"
+color-link identifier.class     "#a9c6b2"
+color-link identifier.var       "#e7e1d5"
+color-link constant             "#b5793f"
+color-link constant.number      "#b5793f"
+color-link constant.string      "#a9c6b2"
+color-link constant.bool        "#b5793f"
+color-link symbol               "#e7e1d5"
+color-link symbol.brackets      "#cfe1d6"
+color-link symbol.tag           "#a9c6b2"
+color-link type                 "#cfe1d6"
+color-link type.keyword         "#b5793f"
+color-link statement            "#c98f5a"
+color-link preproc              "#b5793f"
+color-link special              "#6e9c7a"
+color-link ignore               "#f1e9dc"
+color-link error                "bold #d9534f"
+color-link todo                 "bold #c98f5a"
+
+color-link statusline           "#2f342b,#a9c6b2"
+color-link tabbar               "#a9c6b2,default"
+color-link indent-char          "#3a3f35"
+color-link divider              "#3a3f35"
+color-link line-number          "#5c6357,default"
+color-link current-line-number  "#a9c6b2,default"
+color-link gutter-error         "#d9534f"
+color-link gutter-warning       "#c98f5a"
+color-link cursor-line          ",default"
+color-link color-column         "#2f342b"
+color-link selection            "#f1e9dc,#3f6b4f"
+color-link match-brace          "bold #6e9c7a"
+color-link diff-added           "#6e9c7a"
+color-link diff-modified        "#c98f5a"
+color-link diff-deleted         "#d9534f"
