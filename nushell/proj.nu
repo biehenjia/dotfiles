@@ -1,14 +1,15 @@
-# proj.nu — brew-like ergonomics for per-project nix devshells under ~/+.
+# proj.nu — brew-like ergonomics for per-project nix devshells.
 #
-# `proj init <name> [...packages]`  scaffold ~/+/<name>: .envrc, flake.nix,
-#                                    .gitignore. Packages are plain nixpkgs
-#                                    attribute names, or none for a bare
-#                                    devshell to edit by hand later.
-# `proj list`                       show the current directory's devshell
-#                                    packages.
-# `proj add <pkg>`                  append a package to flake.nix and
-#                                    `direnv reload`.
-# `proj remove <pkg>`                remove a package and `direnv reload`.
+# `proj init [...packages]`  like `git init` — scaffolds .envrc, flake.nix,
+#                             .gitignore into the *current* directory, not a
+#                             new one. `mkdir foo && cd foo && proj init`,
+#                             same as you'd `git init`. Packages are plain
+#                             nixpkgs attribute names, or none for a bare
+#                             devshell to edit by hand later.
+# `proj list`                 show the current directory's devshell packages.
+# `proj add <pkg>`            append a package to flake.nix and
+#                              `direnv reload`.
+# `proj remove <pkg>`         remove a package and `direnv reload`.
 #
 # add/remove/list all just text-edit the current directory's flake.nix —
 # nix does the real work, this only saves hand-editing the packages list.
@@ -30,14 +31,12 @@ def read-packages [] {
     $block | lines | each { |l| $l | str trim } | where { |l| ($l | is-not-empty) }
 }
 
-export def "proj init" [name: string, ...packages: string] {
-    let dir = $"($env.HOME)/+/($name)"
+export def "proj init" [...packages: string] {
+    let dir = $env.PWD
 
-    if ($dir | path exists) {
-        error make { msg: $"($dir) already exists" }
+    if (($dir | path join "flake.nix") | path exists) or (($dir | path join ".envrc") | path exists) {
+        error make { msg: $"($dir) already has a flake.nix or .envrc" }
     }
-
-    mkdir $dir
 
     let envrc = r#'export HOME="$PWD/.home"
 mkdir -p "$HOME"
@@ -66,7 +65,7 @@ use flake
 '#
     $gitignore | save $"($dir)/.gitignore"
 
-    print $"Created ($dir)"
+    print $"Initialized devshell in ($dir)"
 }
 
 export def "proj list" [] {
