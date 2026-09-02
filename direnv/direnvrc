@@ -1,0 +1,10 @@
+# ~/.config/direnv/direnvrc
+#
+# Load nix-direnv, which replaces direnv's stdlib `use flake` with a version
+# that caches the evaluated dev environment and plants a GC root, so `direnv
+# reload` is near-instant after the first build and `nix-collect-garbage` won't
+# tear the shell out from under a project.
+#
+# Installed by bootstrap.sh with `nix profile install nixpkgs#nix-direnv`.
+
+source "$HOME/.nix-profile/share/nix-direnv/direnvrc"

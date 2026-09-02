@@ -1,5 +1,3 @@
-
-use ~/dotfiles/nushell/obs.nu
 use ~/dotfiles/nushell/starship.nu
 use ~/dotfiles/nushell/proj.nu *
 

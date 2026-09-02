@@ -1,0 +1,14 @@
+.DS_Store
+
+# Runtime state some tools write into their config dir. link-dotfiles.nu
+# symlinks individual config files (not whole dirs), so these normally land in
+# the real ~/.config/<tool>/ and never appear here — this is a safety net.
+nushell/history.txt
+nushell/plugin.msgpackz
+micro/backups/
+micro/buffers/
+micro/buffer/
+
+# nix
+result
+result-*

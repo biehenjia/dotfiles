@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.biehenjia.xdg</string>
+
+	<!--
+	  Publishes the XDG base dirs (and a couple of tool-specific homes that
+	  follow the same idea) into the GUI session's environment at login, via
+	  `launchctl setenv`. This is what a Dock-launched ghostty inherits, and
+	  what the bare `nu` ghostty spawns as its `command` sees — neither goes
+	  through a shell, so ~/.zshenv can't reach them.
+
+	  Values are spelled out because `launchctl setenv` does no shell
+	  expansion of its own; $HOME is expanded here by `sh -c`, which launchd
+	  runs with HOME already set for the user.
+	-->
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/sh</string>
+		<string>-c</string>
+		<string>launchctl setenv XDG_CONFIG_HOME "$HOME/.config"; launchctl setenv XDG_DATA_HOME "$HOME/.local/share"; launchctl setenv XDG_STATE_HOME "$HOME/.local/state"; launchctl setenv XDG_CACHE_HOME "$HOME/.cache"; launchctl setenv ZDOTDIR "$HOME/.config/zsh"; launchctl setenv CLAUDE_CONFIG_DIR "$HOME/.config/claude"</string>
+	</array>
+
+	<key>RunAtLoad</key>
+	<true/>
+</dict>
+</plist>

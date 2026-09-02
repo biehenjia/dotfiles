@@ -1,113 +1,113 @@
 # proj.nu — brew-like ergonomics for per-project nix devshells.
 #
-# `proj init [...packages]`  like `git init` — scaffolds .envrc, flake.nix,
-#                             .gitignore into the *current* directory, not a
-#                             new one. `mkdir foo && cd foo && proj init`,
-#                             same as you'd `git init`. Packages are plain
-#                             nixpkgs attribute names, or none for a bare
-#                             devshell to edit by hand later.
-# `proj list`                 show the current directory's devshell packages.
-# `proj add <pkg>`            append a package to flake.nix and
-#                              `direnv reload`.
-# `proj remove <pkg>`         remove a package and `direnv reload`.
+# `proj init [...packages]`  like `git init` — scaffolds a devshell into the
+#                            *current* directory from the template at
+#                            ~/dotfiles/templates/devshell (flake.nix,
+#                            packages.nix, .envrc, .gitignore), seeds it with
+#                            any packages given, and runs `direnv allow`.
+# `proj list`                show the current devshell's packages.
+# `proj add <pkg>`           append a package and `direnv reload`.
+# `proj remove <pkg>`        remove a package and `direnv reload`.
 #
-# add/remove/list all just text-edit the current directory's flake.nix —
-# nix does the real work, this only saves hand-editing the packages list.
-# They only understand the exact shape `proj init` generates, not arbitrary
-# hand-written flakes.
+# add/remove/list only ever touch packages.nix — a flat Nix list this command
+# owns end to end. flake.nix is copied once by the template and never edited
+# again, so there is no fragile flake parsing to break.
 
-def flake-path [] {
-    let path = ($env.PWD | path join "flake.nix")
+def template-ref [] {
+    $"($env.HOME)/dotfiles#devshell"
+}
+
+def packages-path [] {
+    let path = ($env.PWD | path join "packages.nix")
     if not ($path | path exists) {
-        error make { msg: "no flake.nix in the current directory" }
+        error make { msg: "no packages.nix in the current directory (run `proj init`)" }
     }
     $path
 }
 
+# Lines between the `[` and `]` of packages.nix, comments and blanks dropped.
 def read-packages [] {
-    let content = (open (flake-path))
-    let after_start = ($content | split row 'packages = with nixpkgs.legacyPackages.${system}; [' | get 1)
-    let block = ($after_start | split row '        ];' | get 0)
-    $block | lines | each { |l| $l | str trim } | where { |l| ($l | is-not-empty) }
+    let content = (open --raw (packages-path))
+    let inner = ($content | split row '[' | last | split row ']' | first)
+    $inner
+    | lines
+    | each { str trim }
+    | where { |l| ($l | is-not-empty) and (not ($l | str starts-with '#')) }
+}
+
+# Edit packages.nix only — no reload. Returns true if it changed the file.
+def add-package [pkg: string]: nothing -> bool {
+    let path = (packages-path)
+    if $pkg in (read-packages) {
+        return false
+    }
+    let content = (open --raw $path)
+    # Sole `]` in the file is the list's closing bracket.
+    $content | str replace ']' $"  ($pkg)\n]" | save -f $path
+    true
+}
+
+def remove-package [pkg: string]: nothing -> bool {
+    let path = (packages-path)
+    let content = (open --raw $path)
+    let line = $"  ($pkg)\n"
+    if not ($content | str contains $line) {
+        return false
+    }
+    $content | str replace $line '' | save -f $path
+    true
+}
+
+def reload-or-note [msg: string] {
+    if (which direnv | is-not-empty) {
+        print $"($msg) — reloading"
+        ^direnv reload
+    } else {
+        print $msg
+    }
 }
 
 export def "proj init" [...packages: string] {
     let dir = $env.PWD
 
-    if (($dir | path join "flake.nix") | path exists) or (($dir | path join ".envrc") | path exists) {
-        error make { msg: $"($dir) already has a flake.nix or .envrc" }
+    for f in ["flake.nix" ".envrc"] {
+        if (($dir | path join $f) | path exists) {
+            error make { msg: $"($dir) already has a ($f)" }
+        }
     }
 
-    let envrc = r#'export HOME="$PWD/.home"
-mkdir -p "$HOME"
-use flake
-'#
-    $envrc | save $"($dir)/.envrc"
+    ^nix flake init -t (template-ref)
 
-    let flake_prefix = r#'{
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-  outputs = { self, nixpkgs }:
-    let system = "aarch64-darwin"; in
-    {
-      devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShell {
-        packages = with nixpkgs.legacyPackages.${system}; [
-'#
-    let flake_suffix = r#'        ];
-      };
-    };
-}
-'#
-    let pkg_block = ($packages | each { |p| $"          ($p)\n" } | str join "")
-    ($flake_prefix + $pkg_block + $flake_suffix) | save $"($dir)/flake.nix"
+    for pkg in $packages {
+        add-package $pkg | ignore
+    }
 
-    let gitignore = r#'.direnv/
-.home/
-'#
-    $gitignore | save $"($dir)/.gitignore"
+    if (which direnv | is-not-empty) {
+        ^direnv allow
+    }
 
     print $"Initialized devshell in ($dir)"
+    if ($packages | is-not-empty) {
+        print $"  packages: ($packages | str join ', ')"
+    }
 }
 
 export def "proj list" [] {
-    print (read-packages)
+    read-packages
 }
 
 export def "proj add" [pkg: string] {
-    let path = (flake-path)
-    let content = (open $path)
-    let existing = (read-packages)
-
-    if $pkg in $existing {
-        print $"($pkg) is already in this devshell"
-        return
-    }
-
-    let anchor = "        ];"
-    let new_content = ($content | str replace $anchor $"          ($pkg)\n($anchor)")
-    $new_content | save -f $path
-    if (which direnv | is-not-empty) {
-        print $"Added ($pkg) — reloading"
-        ^direnv reload
+    if (add-package $pkg) {
+        reload-or-note $"Added ($pkg)"
     } else {
-        print $"Added ($pkg)"
+        print $"($pkg) is already in this devshell"
     }
 }
 
 export def "proj remove" [pkg: string] {
-    let path = (flake-path)
-    let content = (open $path)
-    let line = $"          ($pkg)\n"
-
-    if not ($content | str contains $line) {
-        print $"($pkg) is not in this devshell"
-        return
-    }
-
-    ($content | str replace $line "") | save -f $path
-    if (which direnv | is-not-empty) {
-        print $"Removed ($pkg) — reloading"
-        ^direnv reload
+    if (remove-package $pkg) {
+        reload-or-note $"Removed ($pkg)"
     } else {
-        print $"Removed ($pkg)"
+        print $"($pkg) is not in this devshell"
     }
 }

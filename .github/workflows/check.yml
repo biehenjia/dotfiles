@@ -1,0 +1,37 @@
+name: check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  nu-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hustcer/setup-nu@v3
+        with:
+          version: "*"
+      - name: nu-check every nushell script
+        run: |
+          for f in nushell/*.nu; do
+            echo "== $f =="
+            nu -c "nu-check --debug '$f'"
+          done
+
+  plist-lint:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: plutil -lint LaunchAgents
+        run: plutil -lint launchd/*.plist
+
+  flake-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - name: nix flake check (templates)
+        run: |
+          nix flake check --all-systems .
+          nix flake check --all-systems ./templates/devshell
