@@ -54,14 +54,6 @@ use flake
         packages = with nixpkgs.legacyPackages.${system}; [
 '#
     let flake_suffix = r#'        ];
-
-        # Optional, per-project: a plain Homebrew Brewfile for anything not
-        # worth pinning through nix. Fully opt-in — no-ops if it's absent.
-        shellHook = ''
-          if [ -f "$PWD/Brewfile" ]; then
-            brew bundle install --file="$PWD/Brewfile" --no-upgrade
-          fi
-        '';
       };
     };
 }
