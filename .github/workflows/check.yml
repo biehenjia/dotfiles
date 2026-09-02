@@ -14,7 +14,11 @@ jobs:
           version: "*"
       - name: nu-check every nushell script
         run: |
-          for f in nushell/*.nu; do
+          # config.nu / the rest of the repo hardcode ~/dotfiles as the clone
+          # location (see nushell/config.nu `use` lines, templates/.envrc). Put
+          # the checkout there so parse-time `use` resolution matches reality.
+          ln -sfn "$GITHUB_WORKSPACE" "$HOME/dotfiles"
+          for f in "$HOME"/dotfiles/nushell/*.nu; do
             echo "== $f =="
             nu -c "nu-check --debug '$f'"
           done
