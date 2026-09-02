@@ -25,10 +25,23 @@ $nodejs\
 $rust\
 $golang\
 $php\
+$python\
+$c\
 [](fg:#3f6b4f bg:#f1e9dc)\
 $time\
 [ ](fg:#f1e9dc)\
 \n$character"""
+
+# Right prompt — rendered on the last line (nushell/starship.nu sets
+# render_right_prompt_on_last_line + PROMPT_COMMAND_RIGHT). No powerline caps
+# here: just dim earthy text trailing the command you actually ran. Without a
+# right_format these modules would sit unused — cmd_duration in particular is
+# already computed (starship.nu passes --cmd-duration) and otherwise discarded.
+right_format = """
+$cmd_duration\
+$git_state\
+$git_metrics\
+$jobs"""
 
 
 [directory]
@@ -81,8 +94,55 @@ symbol = ""
 style = "bg:#3f6b4f"
 format = '[[ $symbol ($version) ](fg:#fbf7f0 bg:#3f6b4f)]($style)'
 
+[python]
+symbol = ""
+style = "bg:#3f6b4f"
+# Trailing venv name when one is active, e.g.  3.12.2 (.venv)
+format = '[[ $symbol ($version)( \($virtualenv\)) ](fg:#fbf7f0 bg:#3f6b4f)]($style)'
+
+# Starship's [c] module covers C and C++. $name is the detected compiler
+# (clang / gcc); keep it since which one is in play actually matters.
+[c]
+symbol = ""
+style = "bg:#3f6b4f"
+format = '[[ $symbol ($version(-$name) ) ](fg:#fbf7f0 bg:#3f6b4f)]($style)'
+
 [time]
 disabled = false
 time_format = "%R" # Hour:Minute Format
 style = "bg:#f1e9dc"
 format = '[[  $time ](fg:#3f6b4f bg:#f1e9dc)]($style)'
+
+
+# ── right prompt ───────────────────────────────────────
+# Plain dim moss text, no powerline caps — a quiet trailer on the last line.
+
+# How long the last command took; hidden under min_time so fast commands stay
+# silent. (starship.nu already passes --cmd-duration; nothing consumed it before.)
+[cmd_duration]
+min_time = 500
+format = '[ 󰔛 $duration]($style)'
+style = "fg:#6e9c7a"
+
+# Mid-operation git state: rebase / merge / cherry-pick in progress, with step
+# counter. Terracotta so it reads as "you are not on solid ground".
+[git_state]
+format = '[ $state( $progress_current/$progress_total)]($style)'
+style = "fg:#b5793f"
+
+# Lines added/removed in the working tree — persistent while the tree is dirty,
+# so it fills the right prompt when cmd_duration/git_state/jobs are all quiet.
+# Complements the left [git_status], which counts changed *files*, not lines.
+# Runs `git diff --shortstat` per prompt: cheap, but it is a subprocess.
+[git_metrics]
+disabled = false
+format = '[ +$added]($added_style)[ -$deleted]($deleted_style)'
+added_style = "fg:#6e9c7a"
+deleted_style = "fg:#b5793f"
+
+# Background jobs (starship.nu passes --jobs).
+[jobs]
+symbol = " "
+number_threshold = 1
+format = '[ $symbol$number]($style)'
+style = "fg:#6e9c7a"
