@@ -9,8 +9,6 @@ let extra = [
   "/usr/bin"
   "/bin"
   "~/.local/bin"
-  "~/.cargo/bin"
-  "/Applications/Obsidian.app/Contents/MacOS"
   # Nix's installer only wires up PATH for POSIX-ish shells (bash/zsh/fish)
   # via /etc/zshrc et al — nushell doesn't read any of those, so it never
   # picks up `nix` on its own.
