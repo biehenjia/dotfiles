@@ -1,0 +1,18 @@
+# Quiet direnv. Without this, every `cd` into a devshell dumps
+#   direnv: loading ~/project/.envrc
+#   direnv: using flake
+#   direnv: nix-direnv: Using cached dev shell
+#   direnv: export +AR +AS +CC … ~HOME ~PATH        (one screen-wide line)
+# on top of whatever the starship prompt already tells you.
+#
+# log_filter is an *allowlist* — a direnv log line shows only if the message
+# matches — so "error" keeps real failures (`direnv: error …`: blocked .envrc,
+# broken flake) while muting the routine chatter. Raw bash errors from inside
+# .envrc bypass the filter and still show, and `nix` build output goes straight
+# to stderr, so a cold first build is still visible.
+#
+# hide_env_diff drops the `export +… ~…` diff for the bash/zsh hooks too (the
+# nushell hook consumes `direnv export json` silently and never printed it).
+[global]
+log_filter = "error"
+hide_env_diff = true

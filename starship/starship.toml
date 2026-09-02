@@ -20,6 +20,7 @@ $directory\
 $git_branch\
 $git_status\
 [](fg:#6e9c7a bg:#3f6b4f)\
+$nix_shell\
 $nodejs\
 $rust\
 $golang\
@@ -50,6 +51,15 @@ format = '[[ $symbol $branch ](fg:#fbf7f0 bg:#6e9c7a)]($style)'
 [git_status]
 style = "bg:#6e9c7a"
 format = '[[($all_status$ahead_behind )](fg:#fbf7f0 bg:#6e9c7a)]($style)'
+
+# Shown whenever IN_NIX_SHELL is set — i.e. inside a `proj` devshell / any
+# `nix develop`. Icon only: every devshell here comes from the same template,
+# so $state ("impure") and $name ("nix-shell-env") would just be noise.
+[nix_shell]
+disabled = false
+symbol = ""
+format = '[[ $symbol ](fg:#fbf7f0 bg:#3f6b4f)]($style)'
+style = "bg:#3f6b4f"
 
 [nodejs]
 symbol = ""

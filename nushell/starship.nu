@@ -3,6 +3,12 @@
 # - module which can be used with `use starship.nu`
 # - script which can be used with `source starship.nu`
 export-env { $env.STARSHIP_SHELL = "nu"; load-env {
+    # Pin the config path now, under the real HOME. Devshells' .envrc points
+    # HOME at ./.home, and starship otherwise resolves its config as
+    # $HOME/.config/starship.toml — inside a devshell that path doesn't exist,
+    # so starship silently drops to its default preset and the powerline is lost.
+    STARSHIP_CONFIG: ($env.STARSHIP_CONFIG? | default ($nu.home-dir | path join ".config" "starship.toml"))
+
     STARSHIP_SESSION_KEY: (random chars -l 16)
     PROMPT_MULTILINE_INDICATOR: (
         ^/opt/homebrew/bin/starship prompt --continuation
