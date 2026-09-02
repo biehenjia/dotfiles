@@ -1,6 +1,7 @@
 
 use ~/dotfiles/nushell/obs.nu
 use ~/dotfiles/nushell/starship.nu
+use ~/dotfiles/nushell/proj.nu *
 
 $env.config = {
     show_banner: false
