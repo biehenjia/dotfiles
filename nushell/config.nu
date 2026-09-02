@@ -1,8 +1,20 @@
 
 use ~/dotfiles/nushell/obs.nu
+use ~/dotfiles/nushell/starship.nu
 
 $env.config = {
     show_banner: false
+    hooks: {
+        env_change: {
+            PWD: [{ ||
+                if (which direnv | is-empty) {
+                    return
+                }
+
+                direnv export json | from json | default {} | load-env
+            }]
+        }
+    }
 }
 
 def box [row: record] {
@@ -45,7 +57,7 @@ def box [row: record] {
   let task_lines = (do $wrap $row.task | each { |line| do $pad $line })
 
   let title_section = if $row.title != null {
-    [ (do $pad ($row.title | str upcase)), $divider ]
+    [ (do $pad ($row.title | str uppercase)), $divider ]
   } else { [] }
 
   [ $top ]

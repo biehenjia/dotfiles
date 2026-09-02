@@ -1,3 +1,5 @@
+command = /opt/homebrew/bin/nu
+
 theme=Everforest Dark Hard
 background-opacity=0.45
 background-blur=true
