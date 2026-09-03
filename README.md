@@ -22,6 +22,7 @@ apps that never source a shell.
 | `templates/devshell/` | `nix flake init -t` template: `packages.nix` + direnv HOME sandbox |
 | `launchd/` | XDG env agent for GUI apps |
 | `ghostty/`, `micro/` | terminal + editor config |
+| `broot/` | `broot` tree browser — `conf.hjson`, `verbs.hjson`, transparent `earthy` skin |
 
 ## Install
 

@@ -27,3 +27,7 @@ export SHELL_SESSIONS_DISABLE=1
 
 command -v starship >/dev/null && eval "$(starship init zsh)"
 command -v direnv   >/dev/null && eval "$(direnv hook zsh)"
+
+# broot's `br` wrapper (cd-on-quit). Vendored copy of broot's generated bash
+# launcher — see broot/br.nu for the nushell side and the refresh command.
+[ -r ~/dotfiles/broot/br.bash ] && command -v broot >/dev/null && . ~/dotfiles/broot/br.bash

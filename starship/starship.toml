@@ -27,6 +27,7 @@ $golang\
 $php\
 $python\
 $c\
+$cpp\
 [](fg:#3f6b4f bg:#f1e9dc)\
 $time\
 [ ](fg:#f1e9dc)\
@@ -100,10 +101,18 @@ style = "bg:#3f6b4f"
 # Trailing venv name when one is active, e.g.  3.12.2 (.venv)
 format = '[[ $symbol ($version)( \($virtualenv\)) ](fg:#fbf7f0 bg:#3f6b4f)]($style)'
 
-# Starship's [c] module covers C and C++. $name is the detected compiler
-# (clang / gcc); keep it since which one is in play actually matters.
+# [c] fires on .c/.h files, [cpp] on .cpp/.cc/.cxx/.hpp/… — they detect
+# independently, so a mixed tree can show both segments. $name is the detected
+# compiler (clang / gcc); keep it since which one is in play actually matters.
 [c]
 symbol = ""
+style = "bg:#3f6b4f"
+format = '[[ $symbol ($version(-$name) ) ](fg:#fbf7f0 bg:#3f6b4f)]($style)'
+
+# Disabled by default in Starship, so it must be turned on explicitly.
+[cpp]
+disabled = false
+symbol = "C++ "
 style = "bg:#3f6b4f"
 format = '[[ $symbol ($version(-$name) ) ](fg:#fbf7f0 bg:#3f6b4f)]($style)'
 

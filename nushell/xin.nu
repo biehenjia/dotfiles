@@ -18,12 +18,26 @@ def template-ref [] {
     $"($env.HOME)/dotfiles#devshell"
 }
 
-def packages-path [] {
-    let path = ($env.PWD | path join "packages.nix")
-    if not ($path | path exists) {
-        error make { msg: "no packages.nix in the current directory (run `xin init`)" }
+# Walk up from $env.PWD for the devshell root — the nearest ancestor holding a
+# packages.nix — so `xin list/add/remove/reload` work from any subdirectory, the
+# way git commands work anywhere below the repo root. `xin init` is unaffected;
+# it only ever scaffolds into $env.PWD.
+def find-root [] {
+    mut dir = ($env.PWD | path expand)
+    loop {
+        if (($dir | path join "packages.nix") | path exists) {
+            return $dir
+        }
+        let parent = ($dir | path dirname)
+        if ($parent == $dir) or ($parent | is-empty) {
+            error make { msg: "no packages.nix in this or any parent directory (run `xin init`)" }
+        }
+        $dir = $parent
     }
-    $path
+}
+
+def packages-path [] {
+    (find-root) | path join "packages.nix"
 }
 
 # Lines between the `[` and `]` of packages.nix, comments and blanks dropped.

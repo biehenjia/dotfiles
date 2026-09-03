@@ -1,6 +1,14 @@
 use ~/dotfiles/nushell/starship.nu
 use ~/dotfiles/nushell/xin.nu *
 
+# broot's `br` — the wrapper that turns a broot session into a real `cd`. This is
+# broot's own generated launcher, vendored to broot/br.nu so a fresh clone works
+# without running `broot --install` first (and so CI's nu-check can resolve it).
+# Needs `use`, not the `source` broot's docs suggest: `export def main` only
+# becomes the `br` command via `use`, and `*` also pulls in the `broot` extern
+# for flag completions. Refresh with: broot --print-shell-function nushell > broot/br.nu
+use ~/dotfiles/broot/br.nu *
+
 # Packages declared in a devshell's packages.nix — for the enter/exit
 # mini-print. Mirrors xin.nu's read-packages but takes an explicit dir: the
 # hook learns the devshell root from DIRENV_DIR, which isn't necessarily $PWD.
