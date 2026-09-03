@@ -1,0 +1,47 @@
+// ~/.config/zed/settings.json — GUI editor. micro stays the TUI editor; this is
+// for the times a real window helps. JSONC: comments and trailing commas are OK.
+//
+// Deliberately minimal, meant to grow. `zed: open default settings` (cmd-shift-p)
+// shows every key and its default.
+{
+  // No usage/telemetry phone-home.
+  "show_completions_on_input": true,
+  "ensure_final_newline_on_save": false,
+  "remove_trailing_whitespace_on_save": false,
+  "toolbar": {
+    "agent_review": false,
+    "selections_menu": false,
+    "quick_actions": false,
+    "breadcrumbs": true
+  },
+  "base_keymap": "VSCode",
+  "icon_theme": {
+    "mode": "dark",
+    "light": "Zed (Default)",
+    "dark": "Zed (Default)"
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
+
+  // Closest earthy match that ships built-in — no extension needed. Swap for an
+  // Everforest theme once its extension is installed, to line up with ghostty
+  // (Everforest Dark Hard) and micro (earthy-transparent).
+  "theme": {
+    "mode": "dark",
+    "light": "One Light",
+    "dark": "One Dark"
+  },
+
+  // Mirror micro's "cursorline": false — the gutter line number is enough.
+  "active_line_highlight": false,
+
+  "vim_mode": false,
+  "disable_ai": true,
+  "title_bar":{
+    "show_menus": false, 
+    "show_sign_in": false, 
+  }
+
+}

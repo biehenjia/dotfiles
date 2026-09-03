@@ -8,6 +8,10 @@ nushell/plugin.msgpackz
 micro/backups/
 micro/buffers/
 micro/buffer/
+zed/themes/
+zed/extensions/
+zed/prompts/
+zed/conversations/
 
 # nix
 result
