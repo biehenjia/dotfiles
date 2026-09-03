@@ -1,4 +1,0 @@
-// ~/.config/zed/keymap.json — custom key bindings, a list of context blocks.
-// Empty for now (mirrors micro/bindings.json); present so a fresh clone has a
-// symlink target. `zed: open default keymap` shows the full set to override.
-[]

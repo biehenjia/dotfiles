@@ -22,7 +22,6 @@ apps that never source a shell.
 | `templates/devshell/` | `nix flake init -t` template: `packages.nix` + direnv HOME sandbox |
 | `launchd/` | XDG env agent for GUI apps |
 | `ghostty/`, `micro/` | terminal + TUI editor config |
-| `zed/` | GUI editor — `settings.json` + `keymap.json`, Gruvbox earthy theme |
 | `broot/` | `broot` tree browser — `conf.hjson`, `verbs.hjson`, transparent `earthy` skin |
 
 ## Install
@@ -30,19 +29,6 @@ apps that never source a shell.
 Clone to **`~/dotfiles`** — the path is hardcoded in a few places
 (`nushell/config.nu` `use` lines, the devshell template's `.envrc`) — then
 symlink individual config files into `~/.config/<tool>/`.
-
-Zed is the one GUI tool: `brew install --cask zed`, then
-
-```sh
-mkdir -p ~/.config/zed
-ln -sfn ~/dotfiles/zed/settings.json ~/.config/zed/settings.json
-ln -sfn ~/dotfiles/zed/keymap.json   ~/.config/zed/keymap.json
-```
-
-Launch it once from the Dock (or run `zed` from outside a devshell) so a normal
-instance is running — after that `zed .` opens folders in it. Starting the very
-first Zed with `zed .` from inside an `xin` devshell would hand it the
-`HOME=$PWD/.home` sandbox and an empty config.
 
 ## CI
 
