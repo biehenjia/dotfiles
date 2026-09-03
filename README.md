@@ -15,7 +15,7 @@ apps that never source a shell.
 
 | Path | |
 |---|---|
-| `nushell/` | config, env, `starship.nu` integration, `proj.nu` (per-project nix devshells) |
+| `nushell/` | config, env, `starship.nu` integration, `xin.nu` (per-project nix devshells) |
 | `starship/` | prompt — earthy powerline palette, quiet right prompt |
 | `zsh/` | `.zshenv` (XDG bootstrap) + interactive `.zshrc` |
 | `direnv/` | `direnvrc` (nix-direnv) + `direnv.toml` |

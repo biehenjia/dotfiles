@@ -1,13 +1,14 @@
-# proj.nu — brew-like ergonomics for per-project nix devshells.
+# xin.nu — brew-like ergonomics for per-project nix devshells.
 #
-# `proj init [...packages]`  like `git init` — scaffolds a devshell into the
+# `xin init [...packages]`   like `git init` — scaffolds a devshell into the
 #                            *current* directory from the template at
 #                            ~/dotfiles/templates/devshell (flake.nix,
 #                            packages.nix, .envrc, .gitignore), seeds it with
 #                            any packages given, and runs `direnv allow`.
-# `proj list`                show the current devshell's packages.
-# `proj add <pkg>`           append a package and `direnv reload`.
-# `proj remove <pkg>`        remove a package and `direnv reload`.
+# `xin list`                 show the current devshell's packages.
+# `xin add <pkg>`            append a package and `direnv reload`.
+# `xin remove <pkg>`         remove a package and `direnv reload`.
+# `xin reload`               force a `direnv reload` of the current devshell.
 #
 # add/remove/list only ever touch packages.nix — a flat Nix list this command
 # owns end to end. flake.nix is copied once by the template and never edited
@@ -20,7 +21,7 @@ def template-ref [] {
 def packages-path [] {
     let path = ($env.PWD | path join "packages.nix")
     if not ($path | path exists) {
-        error make { msg: "no packages.nix in the current directory (run `proj init`)" }
+        error make { msg: "no packages.nix in the current directory (run `xin init`)" }
     }
     $path
 }
@@ -67,7 +68,7 @@ def reload-or-note [msg: string] {
     }
 }
 
-export def "proj init" [...packages: string] {
+export def "xin init" [...packages: string] {
     let dir = $env.PWD
 
     for f in ["flake.nix" ".envrc"] {
@@ -92,11 +93,11 @@ export def "proj init" [...packages: string] {
     }
 }
 
-export def "proj list" [] {
+export def "xin list" [] {
     read-packages
 }
 
-export def "proj add" [pkg: string] {
+export def "xin add" [pkg: string] {
     if (add-package $pkg) {
         reload-or-note $"Added ($pkg)"
     } else {
@@ -104,10 +105,21 @@ export def "proj add" [pkg: string] {
     }
 }
 
-export def "proj remove" [pkg: string] {
+export def "xin remove" [pkg: string] {
     if (remove-package $pkg) {
         reload-or-note $"Removed ($pkg)"
     } else {
         print $"($pkg) is not in this devshell"
     }
+}
+
+# Force a direnv reload of the current devshell — handy after editing
+# packages.nix or flake.nix by hand, or when the environment drifts.
+export def "xin reload" [] {
+    packages-path | ignore
+    if (which direnv | is-empty) {
+        error make { msg: "direnv not installed" }
+    }
+    print "Reloading devshell"
+    ^direnv reload
 }

@@ -1,8 +1,8 @@
 use ~/dotfiles/nushell/starship.nu
-use ~/dotfiles/nushell/proj.nu *
+use ~/dotfiles/nushell/xin.nu *
 
 # Packages declared in a devshell's packages.nix — for the enter/exit
-# mini-print. Mirrors proj.nu's read-packages but takes an explicit dir: the
+# mini-print. Mirrors xin.nu's read-packages but takes an explicit dir: the
 # hook learns the devshell root from DIRENV_DIR, which isn't necessarily $PWD.
 def devshell-packages [dir: string]: nothing -> list<string> {
     let path = ($dir | path join "packages.nix")
@@ -56,7 +56,14 @@ $env.config = ($env.config | merge {
 # `cd +` itself isn't possible — nushell's builtin `cd` can't be overridden
 # (a platform limitation, not a choice; PWD can only be changed by the real
 # `cd`). This is the closest equivalent: bare `+` jumps to ~/+, same as `~`
-# jumps home.
-def --env "+" [] {
-    cd ~/+
+# jumps home; `+ a b c` (or `+ a/b/c`) jumps to ~/+/a/b/c.
+def "nu-complete plus" [] {
+    let base = $"($env.HOME)/+/"
+    glob ~/+/**/ --no-file --depth 4
+    | where {|p| $p | str starts-with $base }
+    | each {|p| $p | str replace $base "" | str trim --right --char "/" }
+}
+
+def --env "+" [...rest: string@"nu-complete plus"] {
+    cd ($"~/+/($rest | path join)" | path expand)
 }

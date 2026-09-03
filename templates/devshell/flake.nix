@@ -11,7 +11,7 @@
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f nixpkgs.legacyPackages.${system});
     in
     {
-      # The package list lives in packages.nix so `proj add` / `proj remove`
+      # The package list lives in packages.nix so `xin add` / `xin remove`
       # only ever edit a flat Nix list — this file stays untouched after init.
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {

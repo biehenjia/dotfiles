@@ -65,7 +65,7 @@ format = '[[ $symbol $branch ](fg:#fbf7f0 bg:#6e9c7a)]($style)'
 style = "bg:#6e9c7a"
 format = '[[($all_status$ahead_behind )](fg:#fbf7f0 bg:#6e9c7a)]($style)'
 
-# Shown whenever IN_NIX_SHELL is set — i.e. inside a `proj` devshell / any
+# Shown whenever IN_NIX_SHELL is set — i.e. inside a `xin` devshell / any
 # `nix develop`. Icon only: every devshell here comes from the same template,
 # so $state ("impure") and $name ("nix-shell-env") would just be noise.
 [nix_shell]
